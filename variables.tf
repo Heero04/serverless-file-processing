@@ -3,7 +3,7 @@ variable "aws_region" {
 }
 
 variable "s3_bucket_name" {
-  default = "serverless-file-processing-bucket"
+  default = "serverless-file-processing-db59f2f4"
 }
 
 variable "dynamodb_table_name" {

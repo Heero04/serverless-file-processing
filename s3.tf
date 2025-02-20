@@ -1,9 +1,20 @@
-resource "aws_s3_bucket" "file_storage" {
-  bucket = var.s3_bucket_name
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
 }
 
+# Used to create a unique name, then replaced with the generated one.
+# (Originally used: "serverless-file-processing-${random_id.bucket_suffix.hex}")
+resource "aws_s3_bucket" "file_storage" {
+  bucket = "serverless-file-processing-db59f2f4"  # 🔹 Replace if needed
+}
+
+resource "aws_s3_bucket" "file_storage" {
+  bucket = "serverless-file-processing-${random_id.bucket_suffix.hex}"  # Creates a unique name
+}
+
+
 resource "aws_s3_bucket_public_access_block" "secure_s3" {
-  bucket = aws_s3_bucket.file_storage.id
+  bucket                  = aws_s3_bucket.file_storage.id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
