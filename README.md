@@ -147,9 +147,13 @@ Fork this repo and submit a Pull Request! 🚀
 
 ## 📜 Future Enhancements
 🔹 1️⃣ Add SNS Notifications: Send an email when a file is processed.
+
 🔹 2️⃣ Implement a Frontend: Build a UI to upload files & view metadata.
+
 🔹 3️⃣ Add CI/CD with GitHub Actions: Automate deployments further.
+
 🔹 4️⃣ Enable Object Expiration: Automatically delete files after X days.
+
 🔹 5️⃣ Improve API Security: Use JWT authentication with Cognito.
 
 ## 🎉 Now your project is fully documented! 🚀
