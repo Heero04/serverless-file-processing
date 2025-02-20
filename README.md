@@ -161,6 +161,8 @@ This README.md gives a strong first impression to recruiters and makes the proje
 
 ## 🔥 Next Steps
 ✔ Push this README.md to GitHub
+
 ✔ Make your GitHub repository Public (so recruiters can see it)
+
 ✔ Set up GitHub Actions for automated deployments (if not done)
 
