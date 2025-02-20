@@ -157,9 +157,9 @@ Fork this repo and submit a Pull Request! 🚀
 🔹 5️⃣ Improve API Security: Use JWT authentication with Cognito.
 
 ## 🔥 Next Steps
-    ✔ Push this README.md to GitHub
+✔ Push this README.md to GitHub
 
-    ✔ Make your GitHub repository Public (so recruiters can see it)
+✔ Make your GitHub repository Public (so recruiters can see it)
 
-    ✔ Set up GitHub Actions for automated deployments (if not done)
+✔ Set up GitHub Actions for automated deployments (if not done)
 
