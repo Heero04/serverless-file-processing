@@ -5,19 +5,28 @@ This project is a serverless file processing system built using AWS Lambda, S3, 
 
 ## 🔹 How It Works:
 1️⃣ A file is uploaded to an AWS S3 bucket, triggering an AWS Lambda function.
+
 2️⃣ Lambda extracts file metadata (file name, type, size, timestamp).
+
 3️⃣ The extracted metadata is stored in a DynamoDB table.
+
 4️⃣ Users can retrieve metadata via an API Gateway endpoint.
 
 ✅ Fully serverless
+
 ✅ Automated metadata extraction
+
 ✅ Scalable & cost-effective solution
 
 ## 🌟 Features
 ✔ Event-Driven Processing: S3 triggers Lambda automatically when a file is uploaded.
+
 ✔ Serverless & Scalable: No need to manage servers; pay only for what you use.
+
 ✔ DynamoDB for Fast Lookup: Quick metadata retrieval via API.
+
 ✔ Secure AWS Infrastructure: IAM, encryption, and API protection applied.
+
 ✔ Automated Deployment: Infrastructure as Code (IaC) with Terraform.
 
 ## 🔒 Security Best Practices
@@ -30,12 +39,17 @@ This project is a serverless file processing system built using AWS Lambda, S3, 
 ## 📋 Prerequisites
 Before deploying, make sure you have:
 🔹 AWS CLI Installed & Configured (aws configure)
+
 🔹 Terraform Installed (terraform -v to check)
+
 🔹 Git Installed (git --version to check)
+
 🔹 SSH Key Configured for GitHub
 
 📂 Project Structure
+
 📂 serverless-file-processing
+
 ├── .github/workflows/deploy.yml   # GitHub Actions CI/CD Workflow
 
 ├── lambda_function.py             # AWS Lambda Function Code
@@ -85,8 +99,11 @@ Run:
 
 🚀 This will create:
 ✅ An S3 bucket with security settings
+
 ✅ An AWS Lambda function triggered by S3
+
 ✅ A DynamoDB table for metadata storage
+
 ✅ An API Gateway for retrieving metadata
 
 
@@ -109,12 +126,13 @@ Run:
     curl -X GET "https://your-api-gateway-url.com/metadata?file=sample.txt"
 
 ✅ Expected API Response:
-{
-  "file_name": "sample.txt",
-  "bucket_name": "serverless-file-processing-db59f2f4",
-  "size": 12345,
-  "file_type": "text/plain"
-}
+
+    {
+    "file_name": "sample.txt",
+    "bucket_name": "serverless-file-processing-db59f2f4",
+    "size": 12345,
+    "file_type": "text/plain"
+    }
 
 ## ❓ Troubleshooting
 File Not Processing?
