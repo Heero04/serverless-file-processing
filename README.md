@@ -77,6 +77,7 @@ Try uploading a new file and testing again
 
 ## 📋 Prerequisites
 Before deploying, make sure you have:
+
 🔹 AWS CLI Installed & Configured (aws configure)
 
 🔹 Terraform Installed (terraform -v to check)
