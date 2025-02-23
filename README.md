@@ -1,5 +1,5 @@
 # 🚀 Serverless File Processing System
-# Fully Serverless | Event-Driven | Scalable
+### Fully Serverless | Event-Driven | Scalable
 This project automatically processes files uploaded to AWS S3, extracts metadata, stores it in DynamoDB, and provides an API Gateway to retrieve metadata.
 
 ✅ Fully Serverless – No servers to manage
@@ -10,7 +10,8 @@ This project automatically processes files uploaded to AWS S3, extracts metadata
 
 ✅ Infrastructure as Code – Managed via Terraform
 
-📌 How It Works
+
+ ## 📌 How It Works
 
 | Step  | What Happens? | AWS Services Used |
 | ------------- | ------------- | ------------- |
@@ -24,7 +25,7 @@ This project automatically processes files uploaded to AWS S3, extracts metadata
 
 # 📌 How to Use This System
 
-# 1️⃣ Upload a File (Via AWS CLI)
+## 1️⃣ Upload a File (Via AWS CLI)
 
 📌 Upload via AWS CLI:
     
@@ -32,7 +33,7 @@ This project automatically processes files uploaded to AWS S3, extracts metadata
 
 ✅ Once uploaded, Lambda will automatically process the file!
 
-# 2️⃣ Retrieve File Metadata (No API Key Required)
+## 2️⃣ Retrieve File Metadata (No API Key Required)
 Once a file is processed, retrieve metadata via API Gateway.
     
     curl -X GET "https://c2u8nkbdsj.execute-api.us-east-1.amazonaws.com/prod/metadata?file=sample.txt"
@@ -40,13 +41,13 @@ Once a file is processed, retrieve metadata via API Gateway.
 ✅ Expected Output (If File Exists in Database)
 
     {
-  "file_name": "sample.txt",
-  "bucket_name": "serverless-file-processing-db59f2f4",
-  "size": 27,
-  "file_type": "text/plain"
+    "file_name": "sample.txt",
+    "bucket_name": "serverless-file-processing-db59f2f4",
+    "size": 27,
+    "file_type": "text/plain"
     }
 
-📌 If the file is not found:
+### 📌 If the file is not found:
 
 Make sure Lambda processed the upload (check logs)
 Try uploading a new file and testing again
@@ -65,9 +66,13 @@ Try uploading a new file and testing again
 
 ## 🔒 Security Best Practices
 🔹 S3 Bucket Security: Public access blocked, encryption enabled.
+
 🔹 IAM Least Privilege: Lambda and API Gateway have minimal required permissions.
+
 🔹 DynamoDB Encryption: Data encrypted at rest with AWS KMS.
+
 🔹 API Gateway Security: Protected via AWS IAM authentication & WAF.
+
 🔹 Terraform State Security: .gitignore prevents exposing sensitive Terraform state files.
 
 ## 📋 Prerequisites
@@ -80,7 +85,8 @@ Before deploying, make sure you have:
 
 🔹 SSH Key Configured for GitHub
 
-📂 Project Structure
+
+## 📂 Project Structure
 
 📂 serverless-file-processing
 
