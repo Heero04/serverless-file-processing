@@ -1,22 +1,56 @@
-# 📂 Serverless File Processing System - Deployment Guide
+# 🚀 Serverless File Processing System
+# Fully Serverless | Event-Driven | Scalable
+This project automatically processes files uploaded to AWS S3, extracts metadata, stores it in DynamoDB, and provides an API Gateway to retrieve metadata.
 
-## 📌 Overview
-This project is a serverless file processing system built using AWS Lambda, S3, DynamoDB, and API Gateway, deployed via Terraform. The system automatically processes uploaded files, extracts metadata, and stores it for retrieval via an API.
+✅ Fully Serverless – No servers to manage
 
-## 🔹 How It Works:
-1️⃣ A file is uploaded to an AWS S3 bucket, triggering an AWS Lambda function.
+✅ Event-Driven Processing – Automatic metadata extraction
 
-2️⃣ Lambda extracts file metadata (file name, type, size, timestamp).
+✅ Fast & Scalable – Built with AWS-native services
 
-3️⃣ The extracted metadata is stored in a DynamoDB table.
+✅ Infrastructure as Code – Managed via Terraform
 
-4️⃣ Users can retrieve metadata via an API Gateway endpoint.
+📌 How It Works
 
-✅ Fully serverless
+| Step  | What Happens? | AWS Services Used |
+| ------------- | ------------- | ------------- |
+| 1️⃣ Upload File to S3  | A user uploads a file to an S3 bucket  | Amazon S3  |
+| 2️⃣ S3 Triggers Lambda | An S3 event triggers the Lambda function to process the file | AWS Lambda + S3 Event Notifications |
+| 3️⃣ Lambda Extracts Metadata | Lambda retrieves file details (size, type, name, etc.)  | AWS Lambda + Boto3  |
+| 4️⃣ Metadata is Stored in DynamoDB  | Lambda writes file metadata into a DynamoDB table | Amazon DynamoDB  |
+| 5️⃣ API Gateway Fetches Metadata | A user makes an API call to retrieve file details  | API Gateway → getMetadata Lambda  |
 
-✅ Automated metadata extraction
+✅ Files are processed automatically—no manual intervention needed!
 
-✅ Scalable & cost-effective solution
+# 📌 How to Use This System
+
+# 1️⃣ Upload a File (Via AWS CLI)
+
+📌 Upload via AWS CLI:
+    
+    aws s3 cp sample.txt s3://serverless-file-processing-db59f2f4/
+
+✅ Once uploaded, Lambda will automatically process the file!
+
+# 2️⃣ Retrieve File Metadata (No API Key Required)
+Once a file is processed, retrieve metadata via API Gateway.
+    
+    curl -X GET "https://c2u8nkbdsj.execute-api.us-east-1.amazonaws.com/prod/metadata?file=sample.txt"
+
+✅ Expected Output (If File Exists in Database)
+
+    {
+  "file_name": "sample.txt",
+  "bucket_name": "serverless-file-processing-db59f2f4",
+  "size": 27,
+  "file_type": "text/plain"
+    }
+
+📌 If the file is not found:
+
+Make sure Lambda processed the upload (check logs)
+Try uploading a new file and testing again
+
 
 ## 🌟 Features
 ✔ Event-Driven Processing: S3 triggers Lambda automatically when a file is uploaded.
@@ -50,8 +84,6 @@ Before deploying, make sure you have:
 
 📂 serverless-file-processing
 
-├── .github/workflows/deploy.yml   # GitHub Actions CI/CD Workflow
-
 ├── lambda_function.py             # AWS Lambda Function Code
 
 ├── main.tf                        # Terraform Configuration
@@ -75,6 +107,8 @@ Before deploying, make sure you have:
 ├── .gitignore                      # Ignore Terraform state & secrets
 
 └── README.md                       # Project Documentation
+
+✅ This setup allows fully automated infrastructure deployment via Terraform!
 
 ## ⚡ Deployment Steps
 ### 1️⃣ Clone the Repository
@@ -164,20 +198,12 @@ Have ideas for improvements?
 Fork this repo and submit a Pull Request! 🚀
 
 ## 📜 Future Enhancements
-🔹 1️⃣ Add SNS Notifications: Send an email when a file is processed.
+🔹 Web UI for File Uploads – Remove AWS Console/CLI dependency
 
-🔹 2️⃣ Implement a Frontend: Build a UI to upload files & view metadata.
+🔹 Pre-Signed URLs for Secure Uploads – Users can upload files directly
 
-🔹 3️⃣ Add CI/CD with GitHub Actions: Automate deployments further.
+🔹 API Key Authentication – Restrict API access to authorized users
 
-🔹 4️⃣ Enable Object Expiration: Automatically delete files after X days.
+🔹 Move AWS SES to Production Mode – Enable email notifications for file processing
 
-🔹 5️⃣ Improve API Security: Use JWT authentication with Cognito.
-
-## 🔥 Next Steps
-✔ Push this README.md to GitHub
-
-✔ Make your GitHub repository Public (so recruiters can see it)
-
-✔ Set up GitHub Actions for automated deployments (if not done)
-
+🔹 Auto-Delete Processed Files – Use S3 lifecycle rules to clean old files
