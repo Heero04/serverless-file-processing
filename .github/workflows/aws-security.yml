@@ -72,15 +72,23 @@ jobs:
           echo "## 🧪 tfsec Results" >> $GITHUB_STEP_SUMMARY
           echo "✅ Terraform security scan completed with no blocking issues." >> $GITHUB_STEP_SUMMARY
 
-      # 3. AWS Well-Architected Tool - Checks architectural best practices
-      - name: AWS Well-Architected Review Findings
+          - name: AWS Well-Architected Review Findings
         run: |
           echo "## 🏗️ AWS Well-Architected Tool" >> $GITHUB_STEP_SUMMARY
           WORKLOAD_ID="1622bdecc757d268d54251e698bc9d86"
-          summary=$(aws wellarchitected get-workload \
+
+          json=$(aws wellarchitected get-workload \
             --workload-id $WORKLOAD_ID \
-            --region us-east-1 | jq -r '.RiskCounts | to_entries[] | "- \(.key): \(.value)"')
-          echo "$summary" >> $GITHUB_STEP_SUMMARY
+            --region us-east-1)
+
+          risk_summary=$(echo "$json" | jq -r '
+            if .RiskCounts then
+              .RiskCounts | to_entries[] | "- \(.key): \(.value)"
+            else
+              "⚠️ No RiskCounts available yet. Complete a review in the AWS Console."
+            end')
+
+          echo "$risk_summary" >> $GITHUB_STEP_SUMMARY
 
       # 4. AWS Trusted Advisor - Provides recommendations for security and cost optimization
       - name: AWS Trusted Advisor Security & Cost Report
