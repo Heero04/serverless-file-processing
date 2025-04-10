@@ -37,6 +37,12 @@ jobs:
           role-to-assume: arn:aws:iam::469440861178:role/GitHubActionsRole
           aws-region: us-east-1
       
+      # 📦 Install Terraform
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.11.4
+
       # 1a. Terraform Init & Validate
       - name: Terraform Init & Validate
         run: |
