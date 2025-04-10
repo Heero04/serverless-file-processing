@@ -1,15 +1,30 @@
-output "s3_bucket_name" {
-  value = aws_s3_bucket.file_storage.id
+# Name of the S3 bucket created for React uploads
+output "bucket_name" {
+  value = aws_s3_bucket.react_uploads.bucket
 }
 
-output "lambda_function_name" {
-  value = aws_lambda_function.file_processor.function_name
+# IAM access key ID for React application
+output "aws_access_key_id" {
+  value = aws_iam_access_key.react_key.id
 }
 
-output "dynamodb_table_name" {
-  value = aws_dynamodb_table.file_metadata.name
+# IAM secret access key for React application (sensitive value)
+output "aws_secret_access_key" {
+  value     = aws_iam_access_key.react_key.secret
+  sensitive = true
 }
 
-output "api_gateway_url" {
-  value = "https://${aws_api_gateway_rest_api.file_api.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_api_gateway_stage.prod.stage_name}"
+# ARN of SNS topic for conversion complete notifications
+output "sns_topic_arn" {
+  value = aws_sns_topic.conversion_complete.arn
+}
+
+# ID of the public subnet
+output "subnet_id" {
+  value = aws_subnet.public_1.id
+}
+
+# ID of security group allowing outbound traffic
+output "security_group_id" {
+  value = aws_security_group.allow_outbound.id
 }

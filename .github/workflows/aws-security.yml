@@ -1,0 +1,163 @@
+# GitHub Actions workflow for AWS security and optimization checks
+# Includes:
+# - Terraform security scanning with tfsec
+# - IAM policy validation with Access Analyzer
+# - Well-Architected Review findings
+# - Trusted Advisor checks
+# - CodeQL security analysis
+
+name: Full AWS Security & Optimization Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  security_and_optimization:
+    runs-on: ubuntu-latest
+    # Set environment based on branch
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+
+    # Required permissions for OIDC auth and security scanning
+    permissions:
+      id-token: write
+      contents: read
+      security-events: write 
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Configure AWS credentials using OIDC for secure authentication
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::469440861178:role/GitHubActionsRole
+          aws-region: us-east-1
+      
+      # 1a. Terraform Init & Validate
+      - name: Terraform Init & Validate
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      # 1b. Terrascan - Static Security Analysis
+      - name: Run Terrascan
+        uses: accurics/terrascan-action@v1.3.0
+        with:
+          iac_type: terraform
+          iac_version: v14 # or v1 if you're on Terraform 1.x
+          policy_type: aws
+
+      # 1. tfsec - Terraform Security Scan
+      - name: Run tfsec Security Scan
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: .
+          soft_fail: false
+        
+      - name: tfsec Summary
+        run: |
+          echo "## 🧪 tfsec Results" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Terraform security scan completed with no blocking issues." >> $GITHUB_STEP_SUMMARY
+
+      # 2. IAM Access Analyzer - Validates IAM policies for security best practices
+      - name: IAM Access Analyzer - Validate Exported Policy
+        run: |
+          set -e
+          echo "## 🛡️ IAM Access Analyzer Results" >> $GITHUB_STEP_SUMMARY
+          findings=$(aws iam access-analyzer validate-policy \
+            --policy-document file://iam-policy.json \
+            --policy-type IDENTITY_POLICY \
+            --validate-policy-resource-type AWS::IAM::Role \
+            --output json)
+
+          echo "$findings" | jq '.findings'
+
+          if echo "$findings" | jq -e '.findings[] | select(.findingType == "ERROR" or .findingType == "SECURITY_WARNING")' > /dev/null; then
+            echo "❌ Access Analyzer found critical issues in iam-policy.json" >> $GITHUB_STEP_SUMMARY
+            echo "$findings" | jq -r '.findings[] | "- \(.findingType): \(.findingDetails)"' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ IAM policy passed Access Analyzer validation." >> $GITHUB_STEP_SUMMARY
+          fi
+      
+       # 2b. IAM Policy Linting with policy_sentry
+      - name: Install policy_sentry
+        run: pip install policy_sentry
+
+      - name: Lint IAM Policy with policy_sentry
+        run: |
+          echo "## 🧠 policy_sentry Analysis" >> $GITHUB_STEP_SUMMARY
+          if policy_sentry analyze --input-file iam-policy.json > ps-report.txt; then
+            echo "✅ policy_sentry passed. Least privilege looks good." >> $GITHUB_STEP_SUMMARY
+            cat ps-report.txt >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ policy_sentry found issues in the policy." >> $GITHUB_STEP_SUMMARY
+            cat ps-report.txt >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      # 3. AWS Well-Architected Tool - Checks architectural best practices
+      - name: AWS Well-Architected Review Findings
+        run: |
+          echo "## 🏗️ AWS Well-Architected Tool" >> $GITHUB_STEP_SUMMARY
+          WORKLOAD_ID="1622bdecc757d268d54251e698bc9d86"
+          summary=$(aws wellarchitected get-workload \
+            --workload-id $WORKLOAD_ID \
+            --region us-east-1 | jq -r '.RiskCounts | to_entries[] | "- \(.key): \(.value)"')
+          echo "$summary" >> $GITHUB_STEP_SUMMARY
+
+      # 4. AWS Trusted Advisor - Provides recommendations for security and cost optimization
+      - name: AWS Trusted Advisor Security & Cost Report
+        run: |
+          echo "## 💰 AWS Trusted Advisor" >> $GITHUB_STEP_SUMMARY
+          aws support describe-trusted-advisor-checks --region us-east-1 \
+            | jq -r '.checks[] | "- \(.name) (\(.category))"' >> $GITHUB_STEP_SUMMARY
+
+      # 5. GitHub CodeQL - Advanced security analysis for Python code
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      # Generate summary of CodeQL findings
+      - name: CodeQL Summary
+        run: |
+          echo "## 🧬 GitHub CodeQL" >> $GITHUB_STEP_SUMMARY
+          echo "✅ CodeQL scan completed. Review alerts in the Security tab if any were raised." >> $GITHUB_STEP_SUMMARY
+
+      # 6. Secret Scanning with Gitleaks
+      - name: Run Gitleaks Secret Scan
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          config-path: .github/.gitleaks.toml # Optional: use a custom config if you have one
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+      - name: Gitleaks Summary
+        if: always()
+        run: |
+          echo "## 🕵️ Gitleaks Secret Scan" >> $GITHUB_STEP_SUMMARY
+          if [ -f gitleaks-report.json ]; then
+             echo "❌ Potential secrets found. Review the gitleaks report." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No secrets detected by Gitleaks." >> $GITHUB_STEP_SUMMARY
+          fi
+    
+      # Save and upload the complete security scan summary
+      - name: Save GitHub Summary to File
+        run: cp "$GITHUB_STEP_SUMMARY" summary.md
+      
+      - name: Upload Summary Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-summary
+          path: summary.md
+      
+        
