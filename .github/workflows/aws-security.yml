@@ -62,7 +62,7 @@ jobs:
       - name: Run tfsec Security Scan
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
-          tfsec_version: latest
+          version: latest
           working_directory: .
           soft_fail: false
           format: sarif
