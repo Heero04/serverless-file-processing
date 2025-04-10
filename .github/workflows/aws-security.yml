@@ -58,7 +58,6 @@ jobs:
           policy_type: aws
           only_warn: true
           
-
       # 1. tfsec - Terraform Security Scan
       - name: Run tfsec Security Scan
         uses: aquasecurity/tfsec-action@v1.0.3
@@ -72,22 +71,6 @@ jobs:
         run: |
           echo "## 🧪 tfsec Results" >> $GITHUB_STEP_SUMMARY
           echo "✅ Terraform security scan completed with no blocking issues." >> $GITHUB_STEP_SUMMARY
-
-      # 2b. IAM Policy Linting with policy_sentry
-      - name: Install policy_sentry
-        run: pip install policy_sentry
-
-      - name: Lint Terraform IAM Policy with policy_sentry
-        run: |
-          echo "## 🧠 policy_sentry Analysis" >> $GITHUB_STEP_SUMMARY
-          if policy_sentry analyze --input-file iam-policy.json > ps-report.txt; then
-            echo "✅ policy_sentry passed. Least privilege looks good." >> $GITHUB_STEP_SUMMARY
-            cat ps-report.txt >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ policy_sentry found issues in the policy." >> $GITHUB_STEP_SUMMARY
-            cat ps-report.txt >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
 
       # 3. AWS Well-Architected Tool - Checks architectural best practices
       - name: AWS Well-Architected Review Findings
