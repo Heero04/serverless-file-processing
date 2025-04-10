@@ -51,18 +51,22 @@ jobs:
 
       # 1b. Terrascan - Static Security Analysis
       - name: Run Terrascan
-        uses: accurics/terrascan-action@v1.3.0
+        uses: tenable/terrascan-action@v1.4.1
         with:
           iac_type: terraform
-          iac_version: v14 # or v1 if you're on Terraform 1.x
+          iac_version: v14
           policy_type: aws
+          terrascan_version: 'v1.19.9'
+          
 
       # 1. tfsec - Terraform Security Scan
       - name: Run tfsec Security Scan
-        uses: aquasecurity/tfsec-action@v1.0.0
+        uses: aquasecurity/tfsec-action@v1.0.3
         with:
+          tfsec_version: latest
           working_directory: .
           soft_fail: false
+          format: sarif
         
       - name: tfsec Summary
         run: |
