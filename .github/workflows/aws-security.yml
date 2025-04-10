@@ -73,10 +73,20 @@ jobs:
           echo "## 🧪 tfsec Results" >> $GITHUB_STEP_SUMMARY
           echo "✅ Terraform security scan completed with no blocking issues." >> $GITHUB_STEP_SUMMARY
 
-      # 2. IAM Access Analyzer - Validates IAM policies for security best practices
-      - name: IAM Access Analyzer - Validate Exported Policy
+      # 2. IAM Access Analyzer - Extract & Validate IAM Policies
+      - name: Terraform Plan (for IAM extraction)
         run: |
-          set -e
+          terraform plan -out=tfplan.binary
+          terraform show -json tfplan.binary > tfplan.json
+
+      - name: Extract IAM Policy JSON from Terraform Plan
+        run: |
+          jq -r '.planned_values.root_module.resources[] |
+            select(.type=="aws_iam_policy") |
+            .values.policy' tfplan.json > iam-policy.json
+
+      - name: IAM Access Analyzer - Validate Terraform IAM Policy
+        run: |
           echo "## 🛡️ IAM Access Analyzer Results" >> $GITHUB_STEP_SUMMARY
           findings=$(aws accessanalyzer validate-policy \
             --policy-document file://iam-policy.json \
@@ -87,18 +97,18 @@ jobs:
           echo "$findings" | jq '.findings'
 
           if echo "$findings" | jq -e '.findings[] | select(.findingType == "ERROR" or .findingType == "SECURITY_WARNING")' > /dev/null; then
-            echo "❌ Access Analyzer found critical issues in iam-policy.json" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Access Analyzer found critical issues in IAM policy extracted from Terraform" >> $GITHUB_STEP_SUMMARY
             echo "$findings" | jq -r '.findings[] | "- \(.findingType): \(.findingDetails)"' >> $GITHUB_STEP_SUMMARY
             exit 1
           else
             echo "✅ IAM policy passed Access Analyzer validation." >> $GITHUB_STEP_SUMMARY
           fi
-      
-       # 2b. IAM Policy Linting with policy_sentry
+
+      # 2b. IAM Policy Linting with policy_sentry
       - name: Install policy_sentry
         run: pip install policy_sentry
 
-      - name: Lint IAM Policy with policy_sentry
+      - name: Lint Terraform IAM Policy with policy_sentry
         run: |
           echo "## 🧠 policy_sentry Analysis" >> $GITHUB_STEP_SUMMARY
           if policy_sentry analyze --input-file iam-policy.json > ps-report.txt; then
