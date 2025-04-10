@@ -78,7 +78,7 @@ jobs:
         run: |
           set -e
           echo "## 🛡️ IAM Access Analyzer Results" >> $GITHUB_STEP_SUMMARY
-          findings=$(aws iam access-analyzer validate-policy \
+          findings=$(aws iam accessanalyzer validate-policy \
             --policy-document file://iam-policy.json \
             --policy-type IDENTITY_POLICY \
             --validate-policy-resource-type AWS::IAM::Role \
