@@ -114,7 +114,6 @@ jobs:
           findings=$(aws accessanalyzer validate-policy \
             --policy-document file://iam-policy.json \
             --policy-type IDENTITY_POLICY \
-            --validate-policy-resource-type AWS::IAM::Role \
             --output json)
 
           echo "$findings" | jq '.findings'
