@@ -23,8 +23,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-# Ignore ZIP files (Lambda deployment packages)
-*.zip
+
 # Ignore AWS credentials (VERY IMPORTANT)
 .aws/
 credentials
