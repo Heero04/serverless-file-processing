@@ -155,7 +155,7 @@ jobs:
         run: cp "$GITHUB_STEP_SUMMARY" summary.md
       
       - name: Upload Summary Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: security-scan-summary
           path: summary.md
