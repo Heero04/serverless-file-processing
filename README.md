@@ -11,8 +11,6 @@ A secure, scalable, serverless system to upload Word documents, convert them to 
 7. Setup & Deployment  
 8. Usage  
 9. Future Enhancements  
-10. Error Handling  
-11. Monitoring and Logging
 
 ## Introduction  
 The **Serverless File Processing System** enables users to securely upload Word documents, automatically converts them to PDF using ECS Fargate containers, and delivers a downloadable link via a React interface. The system is event-driven, serverless, and optimized for scalability and cost-effectiveness.
